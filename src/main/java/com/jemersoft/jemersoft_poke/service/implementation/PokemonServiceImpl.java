@@ -1,7 +1,6 @@
 package com.jemersoft.jemersoft_poke.service.implementation;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.jemersoft.jemersoft_poke.dto.PokemonRequestDto;
 import com.jemersoft.jemersoft_poke.dto.PokemonResponseDto;
 import com.jemersoft.jemersoft_poke.exception.PokemonAlreadyExistsException;
 import com.jemersoft.jemersoft_poke.exception.PokemonNotFoundException;
@@ -18,13 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-/**
- * Service implementation for Pokémon operations.
- */
 @Service
 public class PokemonServiceImpl implements IPokemonService {
 
@@ -43,15 +38,14 @@ public class PokemonServiceImpl implements IPokemonService {
 
     @Override
     public PokemonResponseDto savePokemon(String name) {
-
-        // Check if Pokémon already exists in the DB
+        // Check if Pokémon already exists
         Optional<Pokemon> existing = pokemonRepository.findByName(name);
         if (existing.isPresent()) {
             log.warning("Pokémon '" + name + "' already exists in the database.");
             throw new PokemonAlreadyExistsException(name);
         }
 
-        // Fetch data from PokeAPI
+        // Fetch from PokeAPI
         String url = pokeApiBaseUrl + "/pokemon/" + name;
         JsonNode pokeData;
         try {
@@ -61,6 +55,7 @@ public class PokemonServiceImpl implements IPokemonService {
             log.severe("Pokémon '" + name + "' not found in PokeAPI.");
             throw new PokemonNotFoundException(name);
         }
+
         // Map data to entity
         Pokemon pokemon = new Pokemon();
         pokemon.setName(pokeData.get("name").asText());
@@ -71,10 +66,9 @@ public class PokemonServiceImpl implements IPokemonService {
 
         // Save entity
         Pokemon saved = pokemonRepository.save(pokemon);
-
         log.info("Pokémon '" + name + "' saved successfully.");
 
-        // Map entity to response DTO
+        // Map entity to DTO
         return PokemonMapper.toResponseDto(saved);
     }
 
@@ -85,9 +79,6 @@ public class PokemonServiceImpl implements IPokemonService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Helper method to extract types or abilities from PokeAPI JSON.
-     */
     private List<String> extractList(JsonNode arrayNode, String innerKey) {
         List<String> list = new ArrayList<>();
         arrayNode.forEach(node -> {

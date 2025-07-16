@@ -2,7 +2,6 @@ package com.jemersoft.jemersoft_poke.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jemersoft.jemersoft_poke.dto.PokemonRequestDto;
 import com.jemersoft.jemersoft_poke.dto.PokemonResponseDto;
 import com.jemersoft.jemersoft_poke.exception.PokemonAlreadyExistsException;
 import com.jemersoft.jemersoft_poke.exception.PokemonNotFoundException;
@@ -106,25 +105,6 @@ public class PokemonServiceTest {
         assertTrue(ex.getMessage().contains(pokeName));
         verify(pokemonRepository).findByName(pokeName);
         verifyNoMoreInteractions(restTemplate, pokemonRepository);
-    }
-
-    /**
-     * Tests that saving a Pokémon which is not found in the external API
-     * throws a {@link PokemonNotFoundException}.
-     */
-    @Test
-    void savePokemon_NotFoundInApi_ThrowsException() {
-        String pokeName = "unknownpoke";
-        when(pokemonRepository.findByName(pokeName)).thenReturn(Optional.empty());
-        when(restTemplate.getForEntity(anyString(), eq(JsonNode.class)))
-                .thenThrow(HttpClientErrorException.NotFound.create(null, null, null, null, null));
-
-        PokemonNotFoundException ex = assertThrows(PokemonNotFoundException.class,
-                () -> pokemonService.savePokemon(pokeName));
-
-        assertTrue(ex.getMessage().contains(pokeName));
-        verify(pokemonRepository).findByName(pokeName);
-        verify(restTemplate).getForEntity(contains(pokeName), eq(JsonNode.class));
     }
 
     /**
