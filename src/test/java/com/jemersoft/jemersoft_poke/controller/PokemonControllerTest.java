@@ -1,5 +1,6 @@
 package com.jemersoft.jemersoft_poke.controller;
 
+import com.jemersoft.jemersoft_poke.dto.ApiResponseHandler;
 import com.jemersoft.jemersoft_poke.dto.PokemonResponseDto;
 import com.jemersoft.jemersoft_poke.service.IPokemonService;
 import org.junit.jupiter.api.Test;
@@ -42,12 +43,12 @@ class PokemonControllerTest {
         when(pokemonService.savePokemon(any())).thenReturn(responseDto);
 
         // Call the controller method with the Pokémon name
-        ResponseEntity<PokemonResponseDto> response = controller.savePokemon(pokeName);
+        ResponseEntity<ApiResponseHandler<PokemonResponseDto>> response = controller.savePokemon(pokeName);
 
         // Assert HTTP status is 200 OK
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
-        assertEquals(pokeName, response.getBody().getName());
+        assertEquals(pokeName, response.getBody().getData().getName());
 
         // Verify that service method was called once with any DTO
         verify(pokemonService).savePokemon(any());
