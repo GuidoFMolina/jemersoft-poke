@@ -54,7 +54,7 @@ A Spring Boot REST API to fetch Pokémon data from the official [PokeAPI](https:
    Access API documentation and test endpoints at:
 
    ```
-   http://localhost:8080/swagger-ui.html
+   http://localhost:8080/swagger-ui/index.html
    ```
 
 ---
@@ -68,6 +68,28 @@ A Spring Boot REST API to fetch Pokémon data from the official [PokeAPI](https:
 ```
 POST /pokemon/{name}
 ```
+
+### Explanation for POST `/pokemon/{name}` Endpoint
+
+The `POST /pokemon/{name}` endpoint fetches detailed Pokémon information from the external **PokeAPI** based on the Pokémon name provided in the URL path. Once retrieved, this data is stored in the local database.
+
+When you call this endpoint with a Pokémon name (e.g., `/pokemon/pikachu`), the application performs the following steps:
+
+1. **Fetch data from PokeAPI:**
+   The service sends a request to the public PokeAPI (`https://pokeapi.co/api/v2/pokemon/{name}`) to get detailed information about the requested Pokémon.
+
+2. **Map and save data locally:**
+   The response from PokeAPI is mapped into the local entity model, including properties like name, image URL, weight, types, and abilities.
+
+3. **Save to local database:**
+   The mapped Pokémon entity is saved into the local PostgreSQL database.
+
+4. **Return saved Pokémon data:**
+   Finally, the saved Pokémon data is returned as a JSON response with all the relevant details.
+
+This approach ensures that the application always stores consistent and up-to-date Pokémon data by relying on the official external API as the source of truth.
+
+---
 
 * `name` (path variable): The Pokémon name (case-insensitive)
 
